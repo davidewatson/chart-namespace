@@ -1,0 +1,23 @@
+namespaces: ["test1", "test2"]
+users: ["tester1", "tester2"]
+resourcequota:
+  pods: 4
+  requests.cpu: 1000m
+  requests.memory: 1Gi
+  limits.cpu: 2000m
+  limits.memory: 2Gi
+limitrange:
+- type: Container
+  limits:
+    default:
+      cpu: 500m
+      memory: 500Mi
+    defaultRequest:
+      cpu: 100m
+      memory: 100Mi
+    min:
+      cpu: 0
+      memory: 0
+    max:
+      cpu: 32000m
+      memory: 128Gi

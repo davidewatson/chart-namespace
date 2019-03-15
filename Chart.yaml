@@ -1,0 +1,20 @@
+name: namespace
+version: 0.1.0
+description: A chart to deploy a namespace and associated RBAC rules.
+keywords:
+- gitops
+- security
+- quotas
+- namespaces
+- resourcequotas
+- rbac
+- roles
+- rolebindings
+home: https://github.com/davidewatson/chart-namespace
+sources:
+- https://github.com/davidewatson/chart-namespace
+maintainers:
+- name: Samsung CNCT
+  email: samsung.cloudnative@gmail.com
+icon: 
+engine: gotpl

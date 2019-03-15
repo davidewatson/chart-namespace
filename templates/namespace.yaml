@@ -1,0 +1,81 @@
+{{ range $namespace := .Values.namespaces }}
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: {{ $namespace }}
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: {{ $namespace }}-compute-resources
+  namespace: {{ $namespace }}
+spec:
+  hard:
+{{ range $k, $v := $.Values.resourcequota }}
+    {{ $k }}: {{ $v }}
+{{ end }}
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: {{ $namespace }}-limit-range
+  namespace: {{ $namespace }}
+spec:
+  limits:
+{{ range $lm := $.Values.limitrange }}
+  - type: "{{ $lm.type }}"
+{{ range $stanza, $lines := $lm.limits }}
+    {{ $stanza }}:
+{{ range $k, $v := $lines }}
+      {{ $k }}: {{ $v }}
+{{ end }}
+{{ end }}
+{{ end }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sa-admin
+  namespace: {{ $namespace }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  namespace: {{ $namespace }}
+  name: admin
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: sa-admin
+  namespace: {{ $namespace }}
+subjects:
+- kind: ServiceAccount
+  namespace: {{ $namespace }}
+  name: sa-admin
+roleRef:
+  kind: Role
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+{{   range $user := $.Values.users }}
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: {{ $user }}
+  namespace: {{ $namespace }}
+subjects:
+- kind: User
+  namespace: {{ $namespace }}
+  name: {{ $user }}
+roleRef:
+  kind: Role
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+{{   end }}{{/*   range $user := $.Values.users */}}
+{{ end }}{{/* range $namespace := .Values.namespaces */}}
